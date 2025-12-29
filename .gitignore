@@ -1,0 +1,8 @@
+tmp/
+bin/
+node_modules/
+static/js/
+static/assets/
+*.log
+.air.toml.bak
+deploy-rsync.sh

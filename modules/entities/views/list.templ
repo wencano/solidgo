@@ -1,0 +1,13 @@
+package views
+
+import (
+	"solidgo/models"
+	"solidgo/templates"
+)
+
+templ List(entities []models.Entity) {
+	@templates.Layout("Entities", "/static/js/entities-list.js") {
+		<div id="app" data-entities={ templates.EntitiesJSON(entities) }></div>
+	}
+}
+
