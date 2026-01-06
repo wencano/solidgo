@@ -11,7 +11,7 @@ dev:
 	go run .
 
 ui:
-	npm run build
+	cd vite-solid && npm run build
 
 build: generate ui
 	go build -o bin/solidgo .
