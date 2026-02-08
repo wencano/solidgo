@@ -3,6 +3,7 @@ bin/
 node_modules/
 static/js/
 static/assets/
+data/
 *.log
 .air.toml.bak
 deploy-rsync.sh
