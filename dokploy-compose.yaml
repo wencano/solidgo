@@ -1,0 +1,27 @@
+services:
+  solidgo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      PORT: ${PORT:-9001}
+      DATA_FILE: ${DATA_FILE:-/app/data/data.md}
+      DATA_DEFAULT_FILE: ${DATA_DEFAULT_FILE:-/app/data-default.md}
+    volumes:
+      - ../files/data:/app/data
+    networks:
+      - dokploy-network
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=dokploy-network
+      - traefik.http.routers.solidgo.rule=Host(`${DOMAIN}`)
+      - traefik.http.routers.solidgo.entrypoints=websecure
+      - traefik.http.routers.solidgo.tls.certResolver=letsencrypt
+      - traefik.http.services.solidgo.loadbalancer.server.port=9001
+
+networks:
+  dokploy-network:
+    external: true

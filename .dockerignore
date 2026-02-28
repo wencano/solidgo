@@ -1,0 +1,13 @@
+.git
+.gitignore
+bin/
+tmp/
+*.log
+.air.toml
+.air.toml.bak
+data/
+deploy-rsync.sh
+.DS_Store
+**/.DS_Store
+node_modules/
+vite-solid/node_modules/
