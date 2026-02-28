@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"solidgo/handlers"
+	"solidgo/storage"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -73,7 +75,19 @@ func staticCache(c *fiber.Ctx) error {
 	return c.Next()
 }
 
+func listenAddr() string {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "9001"
+	}
+	return ":" + port
+}
+
 func main() {
+	if err := storage.EnsureDataFile(); err != nil {
+		log.Fatalf("failed to initialize data file: %v", err)
+	}
+
 	app := fiber.New()
 
 	app.Use(requestLogger)
@@ -96,7 +110,8 @@ func main() {
 
 	app.Get("/api/notifications", handlers.GetNotifications)
 
-	log.Println("Server starting on :9001")
-	log.Fatal(app.Listen(":9001"))
+	addr := listenAddr()
+	log.Printf("Server starting on %s", addr)
+	log.Fatal(app.Listen(addr))
 }
 
