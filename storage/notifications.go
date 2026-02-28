@@ -11,10 +11,8 @@ import (
 	"time"
 )
 
-const notificationsFile = "data.md"
-
 func LoadNotifications() ([]models.Notification, error) {
-	data, err := os.ReadFile(notificationsFile)
+	data, err := os.ReadFile(dataFilePath())
 	if err != nil {
 		if os.IsNotExist(err) {
 			return []models.Notification{}, nil
@@ -47,7 +45,7 @@ func SaveNotifications(notifications []models.Notification) error {
 		return fmt.Errorf("failed to marshal JSON: %w", err)
 	}
 
-	data, err := os.ReadFile(notificationsFile)
+	data, err := os.ReadFile(dataFilePath())
 	if err != nil && !os.IsNotExist(err) {
 		return err
 	}
@@ -65,7 +63,7 @@ func SaveNotifications(notifications []models.Notification) error {
 		content += jsonBlock + "\n"
 	}
 
-	return os.WriteFile(notificationsFile, []byte(content), 0644)
+	return os.WriteFile(dataFilePath(), []byte(content), 0644)
 }
 
 func CreateNotification(message, notifType string) error {

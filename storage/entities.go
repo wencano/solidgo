@@ -10,11 +10,10 @@ import (
 	"strings"
 )
 
-const dataFile = "data.md"
-
 var nextID = 0
 
 func init() {
+	_ = EnsureDataFile()
 	entities, _ := LoadEntities()
 	if len(entities) > 0 {
 		maxID := 0
@@ -30,7 +29,7 @@ func init() {
 }
 
 func LoadEntities() ([]models.Entity, error) {
-	data, err := os.ReadFile(dataFile)
+	data, err := os.ReadFile(dataFilePath())
 	if err != nil {
 		if os.IsNotExist(err) {
 			return []models.Entity{}, nil
@@ -62,7 +61,7 @@ func SaveEntities(entities []models.Entity) error {
 		return fmt.Errorf("failed to marshal JSON: %w", err)
 	}
 
-	data, err := os.ReadFile(dataFile)
+	data, err := os.ReadFile(dataFilePath())
 	if err != nil && !os.IsNotExist(err) {
 		return err
 	}
@@ -80,7 +79,7 @@ func SaveEntities(entities []models.Entity) error {
 		content += jsonBlock + "\n"
 	}
 
-	return os.WriteFile(dataFile, []byte(content), 0644)
+	return os.WriteFile(dataFilePath(), []byte(content), 0644)
 }
 
 func GetNextID() int {
