@@ -2,10 +2,21 @@ package templates
 
 import (
 	"encoding/json"
+	"io/fs"
 	"os"
 	"regexp"
 	"solidgo/models"
 )
+
+var cssPath = "/static/assets/style.css"
+
+var cssFilePattern = regexp.MustCompile(`^style.*\.css$`)
+
+func SetCSSPath(path string) {
+	if path != "" {
+		cssPath = path
+	}
+}
 
 func EntitiesJSON(entities []models.Entity) string {
 	data, _ := json.Marshal(entities)
@@ -17,21 +28,38 @@ func EntityJSON(entity models.Entity) string {
 	return string(data)
 }
 
+func CSSPathFromAssets(entries []fs.DirEntry) string {
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
+		}
+		if cssFilePattern.MatchString(entry.Name()) {
+			return "/static/assets/" + entry.Name()
+		}
+	}
+	return ""
+}
+
 func GetCSSPath() string {
-	assetsDir := "static/assets"
-	files, err := os.ReadDir(assetsDir)
+	if path := cssPathFromDir("static/assets"); path != "" {
+		return path
+	}
+	return cssPath
+}
+
+func cssPathFromDir(dir string) string {
+	files, err := os.ReadDir(dir)
 	if err != nil {
-		return "/static/assets/style.css"
+		return ""
 	}
 
-	pattern := regexp.MustCompile(`^style.*\.css$`)
 	for _, file := range files {
-		if !file.IsDir() && pattern.MatchString(file.Name()) {
+		if !file.IsDir() && cssFilePattern.MatchString(file.Name()) {
 			return "/static/assets/" + file.Name()
 		}
 	}
 
-	return "/static/assets/style.css"
+	return ""
 }
 
 func GetPageScriptTag(pageScript string) string {

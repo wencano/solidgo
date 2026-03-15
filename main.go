@@ -3,11 +3,13 @@ package main
 import (
 	"embed"
 	"fmt"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
 	"solidgo/handlers"
 	"solidgo/storage"
+	"solidgo/templates"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -16,6 +18,18 @@ import (
 
 //go:embed static/**/*
 var staticFiles embed.FS
+
+func initCSSPath() {
+	entries, err := fs.ReadDir(staticFiles, "static/assets")
+	if err != nil {
+		log.Printf("warning: could not read embedded CSS assets: %v", err)
+		return
+	}
+
+	if path := templates.CSSPathFromAssets(entries); path != "" {
+		templates.SetCSSPath(path)
+	}
+}
 
 /**
  * main
@@ -87,6 +101,8 @@ func main() {
 	if err := storage.EnsureDataFile(); err != nil {
 		log.Fatalf("failed to initialize data file: %v", err)
 	}
+
+	initCSSPath()
 
 	app := fiber.New()
 
